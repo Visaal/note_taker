@@ -25,18 +25,33 @@
       </div>
 
       <div class="column">
+
         <div>
           <input v-model="note_title" class="input" type="text" placeholder="Title">
         </div>
-        <br />
-        <div>
-          <textarea v-model="note_text" class="textarea" placeholder="...write your notes"></textarea>
+        <br>
+        <div class="columns">
+          <div class="column">
+            <div>
+              <textarea v-model="note_text" class="textarea is-small" v-bind:class="{rows: textAreaHeight }" placeholder="...write your notes"></textarea>
+            </div>
+          </div>
+          <div class="column" v-if="showPreview === true">
+            <div>
+              <div class="content preview" v-html="marked()"></div>
+            </div>
+          </div>
         </div>
-        <br />
+
         <div>
           <a class="button is-link" v-if="editingNote === false" v-on:click="addNote()">Add Note</a>
           <a class="button is-link" v-if="editingNote === true" v-on:click="saveNote()">Save Changes</a>
+          <a class="button is-link" v-on:click="togglePreview()">
+            <span v-if="showPreview">Hide Preview</span>
+            <span v-else>Show Preview</span>
+          </a>
         </div>
+
       </div>
 
     </div>
@@ -61,15 +76,19 @@ var notebookStorage = {
   }
 }
 
+let marked = require('marked')
+
 export default {
   name: 'notebook',
   data () {
     return {
       notebook: notebookStorage.fetch(),
       note_title: null,
-      note_text: null,
+      note_text: '',
       editedNote: null,
-      editingNote: false
+      editingNote: false,
+      textAreaHeight: 20,
+      showPreview: true
     }
   },
   // watch notebook changes for localStorage persistence
@@ -106,6 +125,12 @@ export default {
     clearScreen: function () {
       this.note_title = ''
       this.note_text = ''
+    },
+    marked: function () {
+      return marked(this.note_text)
+    },
+    togglePreview: function () {
+      this.showPreview = !this.showPreview
     }
   }
 }
@@ -116,6 +141,13 @@ export default {
 .card-header-title{
   background-color: white;
   padding: 4px;
+}
+
+.preview {
+  padding: 3%;
+  background-color: hsl(0, 0%, 92%);
+  font-size: 75%;
+  // line-height: 100%
 }
 
 </style>

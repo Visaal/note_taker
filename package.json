@@ -15,6 +15,7 @@
   "dependencies": {
     "bulma": "^0.6.2",
     "font-awesome": "^4.7.0",
+    "marked": "^0.3.17",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1"
   },
