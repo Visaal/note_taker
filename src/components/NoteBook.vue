@@ -16,6 +16,7 @@
               </div>
             </div>
             <footer class="card-footer">
+              <a href="#" class="card-footer-item" v-on:click="viewNote(note)">View</a>
               <a href="#" class="card-footer-item" v-on:click="editNote(note)">Edit</a>
               <a href="#" class="card-footer-item" v-on:click="deleteNote(note)">Delete</a>
             </footer>
@@ -31,7 +32,7 @@
         </div>
         <br>
         <div class="columns">
-          <div class="column">
+          <div class="column" v-if="mode != 'view'">
             <div>
               <textarea v-model="note_text" class="textarea is-small" v-bind:class="{rows: textAreaHeight }" placeholder="...write your notes"></textarea>
             </div>
@@ -44,12 +45,13 @@
         </div>
 
         <div>
-          <a class="button is-link" v-if="editingNote === false" v-on:click="addNote()">Add Note</a>
-          <a class="button is-link" v-if="editingNote === true" v-on:click="saveNote()">Save Changes</a>
-          <a class="button is-link" v-on:click="togglePreview()">
+          <a class="button is-link" v-if="mode === 'new'" v-on:click="addNote()">Add Note</a>
+          <a class="button is-link" v-if="mode === 'edit'" v-on:click="saveNote()">Save Changes</a>
+          <a class="button is-link" v-if="mode != 'view'" v-on:click="togglePreview()">
             <span v-if="showPreview">Hide Preview</span>
             <span v-else>Show Preview</span>
           </a>
+          <a class="button is-link" v-if="mode === 'view'" v-on:click="clearScreen()">Close</a>
         </div>
 
       </div>
@@ -85,10 +87,10 @@ export default {
       notebook: notebookStorage.fetch(),
       note_title: null,
       note_text: '',
-      editedNote: null,
-      editingNote: false,
+      selectedNote: null,
       textAreaHeight: 20,
-      showPreview: true
+      showPreview: true,
+      mode: 'new' // edit, read, new
     }
   },
   // watch notebook changes for localStorage persistence
@@ -109,22 +111,29 @@ export default {
       this.notebook.splice(this.notebook.indexOf(note), 1)
     },
     editNote: function (note) {
-      this.editedNote = note
-      this.editingNote = true
+      this.selectedNote = note
+      this.mode = 'edit'
+      this.note_title = note.title
+      this.note_text = note.text
+    },
+    viewNote: function (note) {
+      this.selectedNote = note
+      this.mode = 'view'
       this.note_title = note.title
       this.note_text = note.text
     },
     saveNote: function () {
-      var index = this.notebook.indexOf(this.editedNote)
+      var index = this.notebook.indexOf(this.selectedNote)
       this.notebook[index].title = this.note_title
       this.notebook[index].text = this.note_text
       this.clearScreen()
-      this.editedNote = null
-      this.editingNote = false
+      this.selectedNote = null
+      this.mode = ''
     },
     clearScreen: function () {
       this.note_title = ''
       this.note_text = ''
+      this.mode = 'new'
     },
     marked: function () {
       return marked(this.note_text)
