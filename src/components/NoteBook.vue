@@ -29,6 +29,14 @@
 
         <div>
           <input v-model="note_title" class="input" type="text" placeholder="Title">
+
+          <input v-model="tag_name" type="text" class="input" v-on:keyup.enter="addTag()">
+          {{ tag_array }}
+
+          <span class="tag_list" v-for="tag in tag_array" :key="tag.id">
+            <span class="tag is-info">{{ tag }} this can be    <i class="fa fa-times-circle" aria-hidden="true"></i></span>
+          </span>
+
         </div>
         <br>
         <div class="columns">
@@ -90,7 +98,9 @@ export default {
       selectedNote: null,
       textAreaHeight: 20,
       showPreview: true,
-      mode: 'new' // edit, read, new
+      mode: 'new', // edit, read, new
+      tag_array: [],
+      tag_name: ''
     }
   },
   // watch notebook changes for localStorage persistence
@@ -140,6 +150,10 @@ export default {
     },
     togglePreview: function () {
       this.showPreview = !this.showPreview
+    },
+    addTag: function () {
+      this.tag_array.push(this.tag_name)
+      this.tag_name = ''
     }
   }
 }
@@ -157,6 +171,11 @@ export default {
   background-color: hsl(0, 0%, 92%);
   font-size: 75%;
   // line-height: 100%
+}
+
+// tag styling
+.tag_list {
+  padding-left: 2px;
 }
 
 </style>
