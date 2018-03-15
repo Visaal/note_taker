@@ -33,9 +33,9 @@
           <input v-model="tag_name" type="text" class="input" v-on:keyup.enter="addTag()">
           {{ tag_array }}
 
-          <span class="tag_list" v-for="tag in tag_array" :key="tag.id">
-            <span class="tag is-info">{{ tag }} this can be    <i class="fa fa-times-circle" aria-hidden="true"></i></span>
-          </span>
+          <div class="tags">
+            <span v-for="tag in tag_array" :key="tag.id" class="tag is-info">{{ tag }} &nbsp; <button class="delete is-small" v-on:click="removeTag(tag)"></button></span>
+          </div>
 
         </div>
         <br>
@@ -154,6 +154,9 @@ export default {
     addTag: function () {
       this.tag_array.push(this.tag_name)
       this.tag_name = ''
+    },
+    removeTag: function (tag) {
+      this.tag_array.splice(this.tag_array.indexOf(tag), 1)
     }
   }
 }
