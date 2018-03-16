@@ -28,11 +28,16 @@
       <div class="column">
 
         <div class="columns">
-          <div class="column is-9">
+          <div class="column is-8">
             <input v-model="note_title" class="input" type="text" placeholder="title">
           </div>
           <div class="column">
             <input v-if="mode != 'view'" v-model="tag_name" type="text" class="input" v-on:keyup.enter="addTag()" placeholder="add tags">
+          </div>
+          <div class="column is-1">
+            <a v-bind:class="{ 'icon has-text-warning': starred, 'icon has-text-grey-lighter': !starred }">
+              <i class="fa fa-star fa-2x" aria-hidden="true" v-on:click="toggleStarred()"></i>
+            </a>
           </div>
         </div>
 
@@ -101,7 +106,8 @@ export default {
       showPreview: true,
       mode: 'new', // edit, read, new
       tag_array: [],
-      tag_name: ''
+      tag_name: '',
+      starred: false
     }
   },
   // watch notebook changes for localStorage persistence
@@ -115,7 +121,7 @@ export default {
   },
   methods: {
     addNote: function () {
-      this.notebook.push({ 'title': this.note_title, 'text': this.note_text, 'tags': this.tag_array })
+      this.notebook.push({ 'title': this.note_title, 'text': this.note_text, 'tags': this.tag_array, 'starred': this.starred })
       this.clearScreen()
     },
     deleteNote: function (note) {
@@ -133,6 +139,7 @@ export default {
       var index = this.notebook.indexOf(this.selectedNote)
       this.notebook[index].title = this.note_title
       this.notebook[index].text = this.note_text
+      this.notebook[index].starred = this.starred
       this.clearScreen()
       this.selectedNote = null
       this.mode = ''
@@ -142,6 +149,7 @@ export default {
       this.note_title = note.title
       this.note_text = note.text
       this.tag_array = note.tags
+      this.starred = note.starred
       this.tag_name = ''
     },
     clearScreen: function () {
@@ -149,6 +157,7 @@ export default {
       this.note_text = ''
       this.tag_array = []
       this.tag_name = ''
+      this.starred = false
       this.mode = 'new'
     },
     marked: function () {
@@ -158,13 +167,14 @@ export default {
       this.showPreview = !this.showPreview
     },
     addTag: function () {
-      console.log(this.tag_name)
-      console.log(this.tag_array)
       this.tag_array.push(this.tag_name)
       this.tag_name = ''
     },
     removeTag: function (tag) {
       this.tag_array.splice(this.tag_array.indexOf(tag), 1)
+    },
+    toggleStarred: function () {
+      this.starred = !this.starred
     }
   }
 }
