@@ -27,18 +27,19 @@
 
       <div class="column">
 
-        <div>
-          <input v-model="note_title" class="input" type="text" placeholder="Title">
-
-          <input v-model="tag_name" type="text" class="input" v-on:keyup.enter="addTag()">
-          {{ tag_array }}
-
-          <div class="tags">
-            <span v-for="tag in tag_array" :key="tag.id" class="tag is-info">{{ tag }} &nbsp; <button class="delete is-small" v-on:click="removeTag(tag)"></button></span>
+        <div class="columns">
+          <div class="column is-9">
+            <input v-model="note_title" class="input" type="text" placeholder="title">
           </div>
-
+          <div class="column">
+            <input v-if="mode != 'view'" v-model="tag_name" type="text" class="input" v-on:keyup.enter="addTag()" placeholder="add tags">
+          </div>
         </div>
-        <br>
+
+        <div class="tags">
+          <span v-for="tag in tag_array" :key="tag.id" class="tag is-info">{{ tag }} &nbsp; <button v-if="mode != 'view'" class="delete is-small" v-on:click="removeTag(tag)"></button></span>
+        </div>
+
         <div class="columns">
           <div class="column" v-if="mode != 'view'">
             <div>
@@ -114,23 +115,19 @@ export default {
   },
   methods: {
     addNote: function () {
-      this.notebook.push({ 'title': this.note_title, 'text': this.note_text })
+      this.notebook.push({ 'title': this.note_title, 'text': this.note_text, 'tags': this.tag_array })
       this.clearScreen()
     },
     deleteNote: function (note) {
       this.notebook.splice(this.notebook.indexOf(note), 1)
     },
     editNote: function (note) {
-      this.selectedNote = note
       this.mode = 'edit'
-      this.note_title = note.title
-      this.note_text = note.text
+      this.selectNote(note)
     },
     viewNote: function (note) {
-      this.selectedNote = note
       this.mode = 'view'
-      this.note_title = note.title
-      this.note_text = note.text
+      this.selectNote(note)
     },
     saveNote: function () {
       var index = this.notebook.indexOf(this.selectedNote)
@@ -140,9 +137,18 @@ export default {
       this.selectedNote = null
       this.mode = ''
     },
+    selectNote: function (note) {
+      this.selectedNote = note
+      this.note_title = note.title
+      this.note_text = note.text
+      this.tag_array = note.tags
+      this.tag_name = ''
+    },
     clearScreen: function () {
       this.note_title = ''
       this.note_text = ''
+      this.tag_array = []
+      this.tag_name = ''
       this.mode = 'new'
     },
     marked: function () {
@@ -152,6 +158,8 @@ export default {
       this.showPreview = !this.showPreview
     },
     addTag: function () {
+      console.log(this.tag_name)
+      console.log(this.tag_array)
       this.tag_array.push(this.tag_name)
       this.tag_name = ''
     },
