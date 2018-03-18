@@ -2,8 +2,25 @@
   <div id="newnote">
     <div class="columns">
 
+      <div class="column is-narrow">
+        <div v-if=searchTag>
+          <code class="subtitle is-6">Your Filters</code>
+          <div class="tags has-addons">
+            <span class="tag is-info">{{ searchTag }}</span>
+            <a class="tag is-delete is-warning" v-on:click="searchTag = ''"></a>
+          </div>
+        </div>
+
+        <code class="subtitle is-6">Filter By Tag</code>
+        <div v-for="tag in allTags" :key="tag.id">
+          <a class="tag is-info" v-on:click="searchTag = tag">{{ tag }}</a>
+        </div>
+
+      </div>
+
       <div class="column is-3">
-        <div id="notebook" v-for="note in notebook" :key="note.id">
+
+        <div id="notebook" v-for="note in filteredNotes" :key="note.id">
           <div class="card">
             <header class="card-header">
               <p class="card-header-title">
@@ -107,17 +124,23 @@ export default {
       mode: 'new', // edit, read, new
       tag_array: [],
       tag_name: '',
-      starred: false
+      starred: false,
+      allTags: [],
+      searchTag: ''
     }
   },
-  // watch notebook changes for localStorage persistence
+  // watch notebook changes for localStorage persistence and tag updates
   watch: {
     notebook: {
       handler: function (notebook) {
         notebookStorage.save(notebook)
+        this.getDistinctTagList()
       },
       deep: true
     }
+  },
+  created: function () {
+    this.getDistinctTagList()
   },
   methods: {
     addNote: function () {
@@ -175,6 +198,26 @@ export default {
     },
     toggleStarred: function () {
       this.starred = !this.starred
+    },
+    getDistinctTagList: function () {
+      // Merge all tag arrays into single one
+      var allTagArray = []
+      this.notebook.forEach(function (note) {
+        allTagArray.push(...note.tags)
+      })
+      // Create distinct array
+      this.allTags = [...new Set(allTagArray)]
+    }
+  },
+  computed: {
+    filteredNotes () {
+      if (this.searchTag === '') {
+        return this.notebook
+      } else {
+        return this.notebook.filter(note => {
+          return note.tags.indexOf(this.searchTag) > -1
+        })
+      }
     }
   }
 }
