@@ -3,11 +3,25 @@
     <div class="columns">
 
       <div class="column is-narrow">
-        <div v-if=searchTag>
-          <code class="subtitle is-6">Your Filters</code>
-          <div class="tags has-addons">
+        <code class="subtitle is-6">Filter By Text</code>
+        <div class="field">
+          <p class="control has-icons-left">
+            <input class="input is-small" placeholder="search notes" v-model="searchText">
+            <span class="icon is-small is-left">
+              <i class="fa fa-search"></i>
+            </span>
+          </p>
+        </div>
+
+        <div>
+          <code v-if='searchTag || searchText' class="subtitle is-6">Your Filters</code>
+          <div v-if=searchTag class="tags has-addons">
             <span class="tag is-info">{{ searchTag }}</span>
             <a class="tag is-delete is-warning" v-on:click="searchTag = ''"></a>
+          </div>
+          <div v-if=searchText class="tags has-addons">
+            <span class="tag is-primary">{{ searchText }}</span>
+            <a class="tag is-delete is-warning" v-on:click="searchText = ''"></a>
           </div>
         </div>
 
@@ -126,7 +140,8 @@ export default {
       tag_name: '',
       starred: false,
       allTags: [],
-      searchTag: ''
+      searchTag: '',
+      searchText: ''
     }
   },
   // watch notebook changes for localStorage persistence and tag updates
@@ -207,10 +222,13 @@ export default {
       })
       // Create distinct array
       this.allTags = [...new Set(allTagArray)]
-    }
-  },
-  computed: {
-    filteredNotes () {
+    },
+    filterNoteText: function () {
+      return this.notebook.filter(note => {
+        return (note.title.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1 || (note.text.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1))
+      })
+    },
+    filterNoteTags: function () {
       if (this.searchTag === '') {
         return this.notebook
       } else {
@@ -218,6 +236,13 @@ export default {
           return note.tags.indexOf(this.searchTag) > -1
         })
       }
+    }
+  },
+  computed: {
+    filteredNotes () {
+      return this.filterNoteText().filter(note => {
+        return this.filterNoteTags().indexOf(note) > -1
+      })
     }
   }
 }
@@ -238,8 +263,8 @@ export default {
 }
 
 // tag styling
-.tag_list {
-  padding-left: 2px;
+.tags:not(:last-child) {
+  margin-bottom: 0px;
 }
 
 </style>
