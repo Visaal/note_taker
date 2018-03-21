@@ -43,18 +43,17 @@
             </div>
           </div>
 
-          <a class="panel-block" id="notebook" v-for="note in filteredNotes" :key="note.id">
+          <span class="panel-block" id="notebook" v-for="note in filteredNotes" :key="note.id">
             <span>
-              <code class="subtitle is-6">{{ note.title }}</code>
+              <a v-on:click="viewNote(note)"><code class="subtitle is-6">{{ note.title }}</code></a>
               <span class="pull-right">
-                <a href="#" v-on:click="viewNote(note)">View</a>
-                <a href="#" v-on:click="editNote(note)">Edit</a>
-                <a href="#" v-on:click="deleteNote(note)">Delete</a>
-                <a href="#" v-on:click="downloadMarkDown(note)">DL</a>
+                <a href="#" v-on:click="editNote(note)"><i class="fa fa-lg fa-pencil has-text-grey" aria-hidden="true"></i></a>
+                <a href="#" v-on:click="deleteNote(note)"><i class="fa fa-lg fa-trash has-text-grey" aria-hidden="true"></i></a>
+                <a href="#" v-on:click="downloadMarkDown(note)"><i class="fa fa-lg fa-arrow-circle-down has-text-grey" aria-hidden="true"></i></a>
               </span>
             </span>
-            <p class="is-size-7">{{ note.text }}</p>
-          </a>
+            <a v-on:click="viewNote(note)"><p class="is-size-7 has-text-grey">{{ note.text }}</p></a>
+          </span>
         </nav>
 
       </div>
