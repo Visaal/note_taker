@@ -50,6 +50,7 @@
                 <a href="#" v-on:click="viewNote(note)">View</a>
                 <a href="#" v-on:click="editNote(note)">Edit</a>
                 <a href="#" v-on:click="deleteNote(note)">Delete</a>
+                <a href="#" v-on:click="downloadMarkDown(note)">DL</a>
               </span>
             </span>
             <p class="is-size-7">{{ note.text }}</p>
@@ -105,6 +106,7 @@
 </template>
 
 <script>
+import saveAs from 'file-saver'
 
 // localStorage persistence
 var STORAGE_KEY = 'notes'
@@ -197,6 +199,11 @@ export default {
       this.tag_name = ''
       this.starred = false
       this.mode = 'new'
+    },
+    downloadMarkDown: function (note) {
+      var blob = new Blob([note.text], {type: 'text/markdown'})
+      var filename = note.title + '.md'
+      saveAs(blob, filename)
     },
     marked: function () {
       return marked(this.note_text)
