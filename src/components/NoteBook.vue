@@ -4,6 +4,8 @@
 
       <div class="column is-3">
 
+        <a class="button" v-on:click="downloadMarkDown()">Download Note</a>
+
         <nav class="panel">
           <p class="panel-heading">
             <code class="subtitle is-5">Notes</code>
@@ -108,6 +110,7 @@
 </template>
 
 <script>
+import saveAs from 'file-saver'
 
 // localStorage persistence
 var STORAGE_KEY = 'notes'
@@ -238,6 +241,10 @@ export default {
           return note.tags.indexOf(this.searchTag) > -1
         })
       }
+    },
+    downloadMarkDown: function () {
+      var blob = new Blob([this.note_text], {type: 'text/plain;charset=utf-8'})
+      saveAs(blob, 'hello world.txt')
     }
   },
   computed: {
