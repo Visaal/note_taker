@@ -2,58 +2,60 @@
   <div id="newnote">
     <div class="columns">
 
-      <div class="column is-narrow">
-        <code class="subtitle is-6">Filter By Text</code>
-        <div class="field">
-          <p class="control has-icons-left">
-            <input class="input is-small" placeholder="search notes" v-model="searchText">
-            <span class="icon is-small is-left">
-              <i class="fa fa-search"></i>
-            </span>
-          </p>
-        </div>
-
-        <div>
-          <code v-if='searchTag || searchText' class="subtitle is-6">Your Filters</code>
-          <div v-if=searchTag class="tags has-addons">
-            <span class="tag is-info">{{ searchTag }}</span>
-            <a class="tag is-delete is-warning" v-on:click="searchTag = ''"></a>
-          </div>
-          <div v-if=searchText class="tags has-addons">
-            <span class="tag is-primary">{{ searchText }}</span>
-            <a class="tag is-delete is-warning" v-on:click="searchText = ''"></a>
-          </div>
-        </div>
-
-        <code class="subtitle is-6">Filter By Tag</code>
-        <div v-for="tag in allTags" :key="tag.id">
-          <a class="tag is-info" v-on:click="searchTag = tag">{{ tag }}</a>
-        </div>
-
-      </div>
-
       <div class="column is-3">
 
-        <div id="notebook" v-for="note in filteredNotes" :key="note.id">
-          <div class="card">
-            <header class="card-header">
-              <p class="card-header-title">
-                {{ note.title }}
-              </p>
-            </header>
-            <div class="card-content">
-              <div class="content">
-                {{ note.text }}
+        <nav class="panel">
+          <p class="panel-heading">
+            <code class="subtitle is-5">Notes</code>
+          </p>
+
+          <div class="panel-block">
+            <code class="subtitle is-6">Search Notes</code><br>
+            <p class="control has-icons-left">
+              <input class="input is-small" placeholder="search notes" v-model="searchText">
+              <span class="icon is-small is-left">
+                <i class="fa fa-search"></i>
+              </span>
+            </p>
+          </div>
+
+          <div class="panel-block tags">
+            <code class="subtitle is-6">Filter By Tag</code><br>
+            <a v-for="tag in allTags" :key="tag.id" class="tag is-info" v-on:click="searchTag = tag">{{ tag }}</a>
+          </div>
+
+          <div v-if='searchTag || searchText' class="panel-block">
+            <code class="subtitle is-6">Your Filters</code>
+            <div class="field is-grouped is-grouped-multiline">
+              <div v-if=searchTag class="control">
+                <div class="tags has-addons">
+                  <span class="tag is-info">{{ searchTag }}</span>
+                  <a class="tag is-delete is-warning" v-on:click="searchTag = ''"></a>
+                </div>
+              </div>
+
+              <div v-if=searchText class="control">
+                <div class="tags has-addons">
+                  <span class="tag is-primary">{{ searchText }}</span>
+                  <a class="tag is-delete is-warning" v-on:click="searchText = ''"></a>
+                </div>
               </div>
             </div>
-            <footer class="card-footer">
-              <a href="#" class="card-footer-item" v-on:click="viewNote(note)">View</a>
-              <a href="#" class="card-footer-item" v-on:click="editNote(note)">Edit</a>
-              <a href="#" class="card-footer-item" v-on:click="deleteNote(note)">Delete</a>
-            </footer>
           </div>
-          <br>
-        </div>
+
+          <a class="panel-block" id="notebook" v-for="note in filteredNotes" :key="note.id">
+            <span>
+              <code class="subtitle is-6">{{ note.title }}</code>
+              <span class="pull-right">
+                <a href="#" v-on:click="viewNote(note)">View</a>
+                <a href="#" v-on:click="editNote(note)">Edit</a>
+                <a href="#" v-on:click="deleteNote(note)">Delete</a>
+              </span>
+            </span>
+            <p class="is-size-7">{{ note.text }}</p>
+          </a>
+        </nav>
+
       </div>
 
       <div class="column">
@@ -265,6 +267,11 @@ export default {
 // tag styling
 .tags:not(:last-child) {
   margin-bottom: 0px;
+}
+
+// styling for panel block to allow normal formatting html tags within them
+.panel-block {
+  display: block;
 }
 
 </style>
