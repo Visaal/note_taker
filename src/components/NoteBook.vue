@@ -4,8 +4,6 @@
 
       <div class="column is-3">
 
-        <a class="button" v-on:click="downloadMarkDown()">Download Note</a>
-
         <nav class="panel">
           <p class="panel-heading">
             <code class="subtitle is-5">Notes</code>
@@ -52,6 +50,7 @@
                 <a href="#" v-on:click="viewNote(note)">View</a>
                 <a href="#" v-on:click="editNote(note)">Edit</a>
                 <a href="#" v-on:click="deleteNote(note)">Delete</a>
+                <a href="#" v-on:click="downloadMarkDown(note)">DL</a>
               </span>
             </span>
             <p class="is-size-7">{{ note.text }}</p>
@@ -63,9 +62,6 @@
       <div class="column">
 
         <div class="columns">
-          <div class="column is-8">
-            <input v-model="note_title" class="input" type="text" placeholder="title">
-          </div>
           <div class="column">
             <input v-if="mode != 'view'" v-model="tag_name" type="text" class="input" v-on:keyup.enter="addTag()" placeholder="add tags">
           </div>
@@ -164,6 +160,7 @@ export default {
   },
   methods: {
     addNote: function () {
+      this.note_title = this.generateNoteTitle()
       this.notebook.push({ 'title': this.note_title, 'text': this.note_text, 'tags': this.tag_array, 'starred': this.starred })
       this.clearScreen()
     },
@@ -180,7 +177,7 @@ export default {
     },
     saveNote: function () {
       var index = this.notebook.indexOf(this.selectedNote)
-      this.notebook[index].title = this.note_title
+      this.notebook[index].title = this.generateNoteTitle()
       this.notebook[index].text = this.note_text
       this.notebook[index].starred = this.starred
       this.clearScreen()
@@ -202,6 +199,11 @@ export default {
       this.tag_name = ''
       this.starred = false
       this.mode = 'new'
+    },
+    downloadMarkDown: function (note) {
+      var blob = new Blob([note.text], {type: 'text/markdown'})
+      var filename = note.title + '.md'
+      saveAs(blob, filename)
     },
     marked: function () {
       return marked(this.note_text)
@@ -242,9 +244,19 @@ export default {
         })
       }
     },
-    downloadMarkDown: function () {
-      var blob = new Blob([this.note_text], {type: 'text/plain;charset=utf-8'})
-      saveAs(blob, 'hello world.txt')
+    removeInititalCharacters: function (inputString, character) {
+      while (inputString[0] === character) {
+        inputString = inputString.substring(1)
+      }
+      return inputString
+    },
+    generateNoteTitle: function () {
+      this.note_title = this.note_text.split('\n')[0] // take title from text body
+      this.note_title = this.note_title.substring(0, 200)
+      this.note_title = this.note_title.replace(/[\\/:"*?<>|]/g, '') // regex to generate a valid file name
+      this.note_title = this.removeInititalCharacters(this.note_title, '#') // deal with markdown titles
+      this.note_title = this.note_title.trim()
+      return this.note_title
     }
   },
   computed: {
