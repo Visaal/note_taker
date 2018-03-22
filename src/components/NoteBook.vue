@@ -312,6 +312,13 @@ export default {
 // styling for panel block to allow normal formatting html tags within them
 .panel-block {
   display: block;
+  // truncate long text within a p tag in note cards
+  p {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
 }
 
 </style>
