@@ -2,13 +2,13 @@
   <div id="newnote">
     <div class="columns">
 
+      <!-- NOTES PANEL -->
       <div class="column is-3">
-
         <nav class="panel">
           <p class="panel-heading">
             <code class="subtitle is-5">Notes</code>
           </p>
-
+          <!-- SEARCH NOTES -->
           <div class="panel-block">
             <code class="subtitle is-6">Search Notes</code><br>
             <p class="control has-icons-left">
@@ -18,15 +18,16 @@
               </span>
             </p>
           </div>
-
+          <!-- FILTER NOTES BY TAG -->
           <div class="panel-block tags">
             <code class="subtitle is-6">Filter By Tag</code><br>
             <a v-for="tag in allTags" :key="tag.id" class="tag is-info" v-on:click="searchTag = tag">{{ tag }}</a>
           </div>
-
+          <!-- ACTIVE FILTERS -->
           <div v-if='searchTag || searchText' class="panel-block">
             <code class="subtitle is-6">Your Filters</code>
             <div class="field is-grouped is-grouped-multiline">
+
               <div v-if=searchTag class="control">
                 <div class="tags has-addons">
                   <span class="tag is-info">{{ searchTag }}</span>
@@ -55,39 +56,63 @@
             <a v-on:click="viewNote(note)"><p class="is-size-7 has-text-grey">{{ note.text }}</p></a>
           </span>
         </nav>
-
       </div>
 
+      <!-- MAIN NOTE AREA -->
       <div class="column">
-
-        <div class="columns">
-          <div class="column">
-            <input v-if="mode != 'view'" v-model="tag_name" type="text" class="input" v-on:keyup.enter="addTag()" placeholder="add tags">
-          </div>
-          <div class="column is-1">
-            <a v-bind:class="{ 'icon has-text-warning': starred, 'icon has-text-grey-lighter': !starred }">
-              <i class="fa fa-star fa-2x" aria-hidden="true" v-on:click="toggleStarred()"></i>
-            </a>
-          </div>
-        </div>
-
-        <div class="tags">
-          <span v-for="tag in tag_array" :key="tag.id" class="tag is-info">{{ tag }} &nbsp; <button v-if="mode != 'view'" class="delete is-small" v-on:click="removeTag(tag)"></button></span>
-        </div>
-
-        <div class="columns">
-          <div class="column" v-if="mode != 'view'">
+        <nav class="level">
+          <div class="level-left">
             <div>
+              <code class="subtitle is-5"><span v-if="note_title">{{ note_title }}</span><span v-else>New Note</span></code>
+            </div>
+          </div>
+
+          <!-- TAGS AND STAR NOTE -->
+          <div class="level-right">
+            <div class="level-item">
+              <!-- DISPLAY TAGS -->
+              <div class="tags">
+                <span v-for="tag in tag_array" :key="tag.id" class="tag is-info">{{ tag }} &nbsp; <button v-if="mode != 'view'" class="delete is-small" v-on:click="removeTag(tag)"></button></span>
+              </div>
+            </div>
+            <!-- ADD TAGS -->
+            <div class="level-item">
+              <div v-if="mode != 'view'" class="field has-addons">
+                <div class="control">
+                  <input v-model="tag_name" type="text" class="input is-small is-rounded" v-on:keyup.enter="addTag()" placeholder="add tags">
+                </div>
+                <div class="control">
+                  <a class="button is-small is-rounded is-info" v-on:click="addTag()">
+                    Add
+                  </a>
+                </div>
+              </div>
+            </div>
+            <!-- STAR NOTE -->
+            <div class="level-item">
+              <span v-bind:class="{ 'icon has-text-warning': starred, 'icon has-text-grey-lighter': !starred }">
+                <i class="fa fa-star fa-2x" aria-hidden="true" v-on:click="toggleStarred()"></i>
+              </span>
+            </div>
+          </div>
+        </nav>
+
+        <div class="tile is-ancestor">
+          <!-- TEXT EDITOR -->
+          <div class="tile is-vertical" v-if="mode != 'view'">
+            <div class="tile is-parent us">
               <textarea v-model="note_text" class="textarea is-small" v-bind:class="{rows: textAreaHeight }" placeholder="...write your notes"></textarea>
             </div>
           </div>
-          <div class="column" v-if="showPreview === true">
-            <div>
+          <!-- PREVIEW PANE -->
+          <div class="tile is-parent" v-if="showPreview === true">
+            <article class="tile is-child box">
               <div class="content preview" v-html="marked()"></div>
-            </div>
+            </article>
           </div>
         </div>
 
+        <!-- ACTION BUTTONS -->
         <div>
           <a class="button is-link" v-if="mode === 'new'" v-on:click="addNote()">Add Note</a>
           <a class="button is-link" v-if="mode === 'edit'" v-on:click="saveNote()">Save Changes</a>
@@ -276,10 +301,7 @@ export default {
 }
 
 .preview {
-  padding: 3%;
-  background-color: hsl(0, 0%, 92%);
   font-size: 75%;
-  // line-height: 100%
 }
 
 // tag styling
