@@ -20,6 +20,7 @@ export default {
 <style lang="scss">
 
   @import '~bulma';
+  @import '~bulma-tooltip';
 
   .columns{
     flex-wrap: wrap

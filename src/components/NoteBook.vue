@@ -94,6 +94,12 @@
                 <i class="fa fa-star fa-2x" aria-hidden="true" v-on:click="toggleStarred()"></i>
               </span>
             </div>
+            <!-- PREVIEW PANE TOGGLE -->
+            <div v-if="mode != 'view'" class="level-item">
+              <span class="tooltip is-tooltip-left" data-tooltip="Toggle Preview" v-bind:class="{ 'icon has-text-info': showPreview, 'icon has-text-grey-lighter': !showPreview }">
+                <i class="fa fa-columns fa-2x" aria-hidden="true" v-on:click="togglePreview()"></i>
+              </span>
+            </div>
           </div>
         </nav>
 
@@ -116,10 +122,6 @@
         <div>
           <a class="button is-link" v-if="mode === 'new'" v-on:click="addNote()">Add Note</a>
           <a class="button is-link" v-if="mode === 'edit'" v-on:click="saveNote()">Save Changes</a>
-          <a class="button is-link" v-if="mode != 'view'" v-on:click="togglePreview()">
-            <span v-if="showPreview">Hide Preview</span>
-            <span v-else>Show Preview</span>
-          </a>
           <a class="button is-link" v-if="mode === 'view'" v-on:click="clearScreen()">Close</a>
         </div>
 
