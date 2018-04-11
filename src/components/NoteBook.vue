@@ -220,7 +220,6 @@ export default {
       this.sortNotesByLastModified()
       this.clearScreen()
       this.selectedNote = null
-      this.mode = ''
     },
     selectNote: function (note) {
       this.selectedNote = note
