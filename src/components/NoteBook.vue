@@ -184,6 +184,8 @@ export default {
   },
   created: function () {
     this.getDistinctTagList()
+    // Show the latest note that was worked on when opening the app
+    this.viewNote(this.notebook[0])
   },
   methods: {
     addNote: function () {
