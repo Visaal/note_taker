@@ -5,8 +5,11 @@
       <!-- NOTES PANEL -->
       <div class="column is-3">
         <nav class="panel">
-          <p class="panel-heading">
+          <p class="panel-heading is-clearfix">
             <code class="subtitle is-5">Notes</code>
+              <span class="pull-right">
+                <a href="#" v-on:click="clearScreen()"><i class="fa fa-plus-circle has-text-success is-size-3"></i></a>
+              </span>
           </p>
           <!-- SEARCH NOTES -->
           <div class="panel-block">
