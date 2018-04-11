@@ -54,6 +54,7 @@
               </span>
             </span>
             <a v-on:click="viewNote(note)"><p class="is-size-7 has-text-grey">{{ note.text }}</p></a>
+            <p class="is-size-7 has-text-grey-light">{{ note.last_modified_string }}</p>
           </span>
         </nav>
       </div>
@@ -187,7 +188,15 @@ export default {
   methods: {
     addNote: function () {
       this.note_title = this.generateNoteTitle()
-      this.notebook.push({ 'title': this.note_title, 'text': this.note_text, 'tags': this.tag_array, 'starred': this.starred })
+      this.notebook.push({
+        'title': this.note_title,
+        'text': this.note_text,
+        'tags': this.tag_array,
+        'starred': this.starred,
+        'last_modified_timestamp': Date.now(),
+        'last_modified_string': this.formatDateTime(Date.now())
+      })
+      this.sortNotesByLastModified()
       this.clearScreen()
     },
     deleteNote: function (note) {
@@ -206,6 +215,9 @@ export default {
       this.notebook[index].title = this.generateNoteTitle()
       this.notebook[index].text = this.note_text
       this.notebook[index].starred = this.starred
+      this.notebook[index].last_modified_timestamp = Date.now()
+      this.notebook[index].last_modified_string = this.formatDateTime(Date.now())
+      this.sortNotesByLastModified()
       this.clearScreen()
       this.selectedNote = null
       this.mode = ''
@@ -217,6 +229,11 @@ export default {
       this.tag_array = note.tags
       this.starred = note.starred
       this.tag_name = ''
+    },
+    sortNotesByLastModified: function () {
+      this.notebook.sort(function (a, b) {
+        return b.last_modified_timestamp - a.last_modified_timestamp
+      })
     },
     clearScreen: function () {
       this.note_title = ''
@@ -283,6 +300,11 @@ export default {
       this.note_title = this.removeInititalCharacters(this.note_title, '#') // deal with markdown titles
       this.note_title = this.note_title.trim()
       return this.note_title
+    },
+    formatDateTime: function (dateObject) {
+      let options = { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }
+      let dateTime = new Date(dateObject)
+      return dateTime.toLocaleString('en-GB', options).replace(',', '')
     }
   },
   computed: {
