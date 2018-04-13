@@ -122,13 +122,6 @@
           </div>
         </div>
 
-        <!-- ACTION BUTTONS -->
-        <div>
-          <a class="button is-link" v-if="mode === 'new'" v-on:click="addNote()">Add Note</a>
-          <a class="button is-link" v-if="mode === 'edit'" v-on:click="saveNote()">Save Changes</a>
-          <a class="button is-link" v-if="mode === 'view'" v-on:click="clearScreen()">Close</a>
-        </div>
-
       </div>
 
     </div>
@@ -172,7 +165,8 @@ export default {
       starred: false,
       allTags: [],
       searchTag: '',
-      searchText: ''
+      searchText: '',
+      selectedNoteCompoundProperty: null
     }
   },
   // watch notebook changes for localStorage persistence and tag updates
@@ -183,6 +177,12 @@ export default {
         this.getDistinctTagList()
       },
       deep: true
+    },
+    // watch compound property to automatically save note
+    compoundProperty: {
+      handler: function () {
+        this.autosaveNote()
+      }
     }
   },
   created: function () {
@@ -191,18 +191,33 @@ export default {
     this.viewNote(this.notebook[0])
   },
   methods: {
+    autosaveNote: function () {
+      // check whether an existing note or a new note
+      if (this.selectedNote) {
+        // check if the note has changed and save if it has
+        if (this.selectedNoteCompoundProperty !== this.compoundProperty) {
+          this.saveNote()
+        }
+      // if new note add it once some text has been written and select it
+      } else {
+        if (this.note_text) {
+          this.selectedNote = this.addNote()
+        }
+      }
+    },
     addNote: function () {
       this.note_title = this.generateNoteTitle()
-      this.notebook.push({
+      let note = {
         'title': this.note_title,
         'text': this.note_text,
         'tags': this.tag_array,
         'starred': this.starred,
         'last_modified_timestamp': Date.now(),
         'last_modified_string': this.formatDateTime(Date.now())
-      })
+      }
+      this.notebook.push(note)
       this.sortNotesByLastModified()
-      this.clearScreen()
+      return note
     },
     deleteNote: function (note) {
       this.notebook.splice(this.notebook.indexOf(note), 1)
@@ -223,8 +238,6 @@ export default {
       this.notebook[index].last_modified_timestamp = Date.now()
       this.notebook[index].last_modified_string = this.formatDateTime(Date.now())
       this.sortNotesByLastModified()
-      this.clearScreen()
-      this.selectedNote = null
     },
     selectNote: function (note) {
       this.selectedNote = note
@@ -233,6 +246,7 @@ export default {
       this.tag_array = note.tags
       this.starred = note.starred
       this.tag_name = ''
+      this.selectedNoteCompoundProperty = [this.note_text, this.tag_array, this.starred].join()
     },
     sortNotesByLastModified: function () {
       this.notebook.sort(function (a, b) {
@@ -240,11 +254,13 @@ export default {
       })
     },
     clearScreen: function () {
+      this.selectedNote = null
       this.note_title = ''
       this.note_text = ''
       this.tag_array = []
       this.tag_name = ''
       this.starred = false
+      this.selectedNoteCompoundProperty = null
       this.mode = 'new'
     },
     downloadMarkDown: function (note) {
@@ -316,6 +332,11 @@ export default {
       return this.filterNoteText().filter(note => {
         return this.filterNoteTags().indexOf(note) > -1
       })
+    },
+    compoundProperty () {
+      // track the values to watch for a change
+      // `.join()` because we don't care about the return value.
+      return [this.note_text, this.tag_array, this.starred].join()
     }
   }
 }
