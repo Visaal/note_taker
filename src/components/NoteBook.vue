@@ -111,7 +111,7 @@
           <!-- TEXT EDITOR -->
           <div class="tile is-vertical" v-if="mode != 'view'">
             <div class="tile is-parent us">
-              <textarea v-model="note_text" class="textarea is-small" v-bind:class="{rows: textAreaHeight }" placeholder="...write your notes"></textarea>
+              <textarea v-model="note_text" class="is-small editor-content" contenteditable="true" placeholder="...write your notes"></textarea>
             </div>
           </div>
           <!-- PREVIEW PANE -->
@@ -157,7 +157,6 @@ export default {
       note_title: null,
       note_text: '',
       selectedNote: null,
-      textAreaHeight: 20,
       showPreview: true,
       mode: 'new', // edit, read, new
       tag_array: [],
@@ -367,7 +366,26 @@ export default {
     overflow: hidden;
     text-overflow: ellipsis;
   }
+}
 
+// specific styling to make editor-content textarea take up more of the screen as textarea has a height limit
+.tile .is-parent textarea {
+  -webkit-appearance: none;
+  -webkit-box-align: center;
+  -webkit-box-direction: normal;
+  align-items: center;
+  border: 1px solid transparent;
+  padding: 0.625em;
+  resize: vertical;
+  height: 80vh;
+  line-height: 1.5;
+  justify-content: flex-start;
+  vertical-align: top;
+  background-color: white;
+  border-color: #dbdbdb;
+  color: #363636;
+  box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.1);
+  width: 100%;
 }
 
 </style>
