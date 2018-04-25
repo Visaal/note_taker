@@ -52,7 +52,7 @@
               <a v-on:click="viewNote(note)"><code class="subtitle is-6">{{ note.title }}</code></a>
               <span class="pull-right">
                 <a href="#" v-on:click="editNote(note)"><i class="fa fa-lg fa-pencil has-text-grey" aria-hidden="true"></i></a>
-                <a href="#" v-on:click="deleteNote(note)"><i class="fa fa-lg fa-trash has-text-grey" aria-hidden="true"></i></a>
+                <a href="#" v-on:click="confirmNoteDeletion(note)"><i class="fa fa-lg fa-trash has-text-grey modal-button" data-target="modal" aria-haspopup="true" aria-hidden="true"></i></a>
                 <a href="#" v-on:click="downloadMarkDown(note)"><i class="fa fa-lg fa-arrow-circle-down has-text-grey" aria-hidden="true"></i></a>
               </span>
             </span>
@@ -125,6 +125,36 @@
       </div>
 
     </div>
+
+    <!-- CONFIRM DELETE MODAL WINDOW -->
+    <div class="modal" v-bind:class="{ 'is-active': deletingNote }">
+      <div class="modal-background"></div>
+      <div class="modal-content">
+        <div class="tile is-parent">
+          <article class="tile is-child notification is-info">
+            <p>Are you sure you would like to delete <strong>{{ note_title }}</strong>?</p>
+            <br>
+            <div class="content is-pulled-right">
+              <p class="buttons">
+                <a class="button is-danger is-focused" v-on:click='deleteNote()'>
+                  <span class="icon">
+                    <i class="fa fa-trash"></i>
+                  </span>
+                  <span>Delete</span>
+                </a>
+                <a class="button is-success" v-on:click='deletingNote =! deletingNote'>
+                  <span class="icon">
+                    <i class="fa fa-minus-circle"></i>
+                  </span>
+                  <span>Cancel</span>
+                </a>
+              </p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -165,7 +195,8 @@ export default {
       allTags: [],
       searchTag: '',
       searchText: '',
-      selectedNoteCompoundProperty: null
+      selectedNoteCompoundProperty: null,
+      deletingNote: false
     }
   },
   // watch notebook changes for localStorage persistence and tag updates
@@ -218,8 +249,14 @@ export default {
       this.sortNotesByLastModified()
       return note
     },
-    deleteNote: function (note) {
-      this.notebook.splice(this.notebook.indexOf(note), 1)
+    confirmNoteDeletion: function (note) {
+      this.deletingNote = true
+      this.selectNote(note)
+    },
+    deleteNote: function () {
+      this.notebook.splice(this.notebook.indexOf(this.selectedNote), 1)
+      this.deletingNote = false
+      this.viewNote(this.notebook[0])
     },
     editNote: function (note) {
       this.mode = 'edit'
@@ -261,6 +298,7 @@ export default {
       this.starred = false
       this.selectedNoteCompoundProperty = null
       this.mode = 'new'
+      this.deletingNote = false
     },
     downloadMarkDown: function (note) {
       var blob = new Blob([note.text], {type: 'text/markdown'})
